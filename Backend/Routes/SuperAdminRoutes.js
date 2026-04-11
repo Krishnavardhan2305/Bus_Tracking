@@ -5,7 +5,7 @@ import {
   createCollegeAdmin,
   getAllColleges,
   getCollegeAdmins
-} from "../controllers/superadminController.js";
+} from "../Controllers/SuperAdminController.js";
 
 import { isAuthenticated , superAdminOnly } from "../MiddleWare/IsAuthenticated.js";
 

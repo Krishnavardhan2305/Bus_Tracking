@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 export const loginSuperAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
