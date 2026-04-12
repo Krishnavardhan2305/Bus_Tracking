@@ -3,7 +3,15 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
+export const getMe = async (req, res) => {
+  try {
+    res.status(200).json({
+      user: req.user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const loginSuperAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -169,3 +177,58 @@ export const getCollegeAdmins = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getCollegeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const college = await College.findById(id);
+
+    if (!college) {
+      return res.status(404).json({ message: "College not found" });
+    }
+
+    res.status(200).json({ college });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const viewAdmins = async (req, res) => {
+  try {
+    const { collegeId } = req.params;
+
+    const college = await College.findById(collegeId);
+
+    if (!college) {
+      return res.status(404).json({ message: "College not found" });
+    }
+
+    const admins = await User.find({
+      collegeId,
+      role: "admin",
+    }).select("-password");
+
+    res.status(200).json({
+      college,
+      admins,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const logout = async (req, res) => {
+    try {
+        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+            message: " Logged out succesfully"
+        })
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

@@ -2,7 +2,9 @@ import axios from 'axios';
 import React from 'react'
 import { useState } from 'react';
 import { SUPERADMIN_API_ENDPOINT } from '../../utils/constant';
+import toast from "react-hot-toast";
 const CreateCollege = () => {
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -17,12 +19,14 @@ const CreateCollege = () => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       await axios.post(
         `${SUPERADMIN_API_ENDPOINT}/college`,
         form,
         { withCredentials: true }
       );
-      alert("College created successfully");
+      toast.success("College created successfully");
       setForm({ name: "", email: "", code: "" });
     } catch (err) {
       alert("Error creating college");
@@ -70,8 +74,8 @@ const CreateCollege = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-success w-100">
-            Create College
+          <button type="submit" className="btn btn-success w-100" disabled={loading}>
+             {loading ? "Creating College..." : "Create College"}
           </button>
         </form>
       </div>

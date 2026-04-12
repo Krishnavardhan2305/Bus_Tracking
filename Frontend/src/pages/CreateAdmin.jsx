@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { SUPERADMIN_API_ENDPOINT } from "../../utils/constant";
-
+import toast from "react-hot-toast";
 const CreateAdmin = () => {
   const [form, setForm] = useState({
     name: "",
@@ -9,24 +10,35 @@ const CreateAdmin = () => {
     password: "",
     collegeId: "",
   });
-
-  const [colleges, setColleges] = useState([]);
+  const navigate=useNavigate();
+  const [college, setCollege] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchColleges();
-  }, []);
+  const [searchParams] = useSearchParams();
+  const collegeId = searchParams.get("collegeId");
 
-  const fetchColleges = async () => {
+  useEffect(() => {
+    if (collegeId) {
+      fetchCollege();
+    }
+  }, [collegeId]);
+
+  const fetchCollege = async () => {
     try {
       const res = await axios.get(
-        `${SUPERADMIN_API_ENDPOINT}/colleges`, 
+        `${SUPERADMIN_API_ENDPOINT}/college/${collegeId}`,
         { withCredentials: true }
       );
 
-      setColleges(res.data.colleges || []);
+      setCollege(res.data.college);
+
+      setForm((prev) => ({
+        ...prev,
+        collegeId: res.data.college._id,
+      }));
+
     } catch (err) {
-      console.error("Error fetching colleges:", err);
+      console.error(err);
     }
   };
 
@@ -37,32 +49,27 @@ const CreateAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.collegeId) {
-      alert("Please select a college");
-      return;
-    }
-
     try {
       setLoading(true);
 
       await axios.post(
-        `${SUPERADMIN_API_ENDPOINT}/admin`, 
+        `${SUPERADMIN_API_ENDPOINT}/admin`,
         form,
         { withCredentials: true }
       );
 
-      alert("Admin created successfully");
+      toast.success("Admin created successfully ");
 
       setForm({
         name: "",
         email: "",
         password: "",
-        collegeId: "",
+        collegeId,
       });
+      navigate('/dashboard')
 
     } catch (err) {
-      console.error("Error creating admin:", err);
-      alert(err.response?.data?.message || "Error creating admin");
+      toast.error(err.response?.data?.message || "Error creating admin");
     } finally {
       setLoading(false);
     }
@@ -71,67 +78,46 @@ const CreateAdmin = () => {
   return (
     <div className="container mt-5">
       <div className="card p-4 shadow">
-        <h3 className="mb-3">Create College Admin</h3>
+        <h3>Create Admin</h3>
+        {college && (
+          <div className="mb-3 p-3 bg-light rounded">
+            <strong>College:</strong> {college.name} <br />
+            <strong>Email:</strong> {college.email} <br />
+            <strong>Code:</strong> {college.code}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-2">
-            <input
-              name="name"
-              placeholder="Name"
-              className="form-control"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-2">
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              className="form-control"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-2">
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              className="form-control"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <select
-              name="collegeId"
-              className="form-select"
-              value={form.collegeId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select College</option>
+          <input
+            name="name"
+            placeholder="Admin Name"
+            className="form-control mb-2"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-              {colleges.length > 0 ? (
-                colleges.map((college) => (
-                  <option key={college._id} value={college._id}>
-                    {college.name} ({college.code})
-                  </option>
-                ))
-              ) : (
-                <option disabled>No colleges available</option>
-              )}
-            </select>
-          </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="Admin Email"
+            className="form-control mb-2"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-          <button
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="form-control mb-3"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button className="btn btn-primary w-100" disabled={loading}>
             {loading ? "Creating..." : "Create Admin"}
           </button>
         </form>

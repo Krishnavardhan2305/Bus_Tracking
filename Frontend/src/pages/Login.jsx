@@ -1,23 +1,36 @@
-import axios from 'axios';
-import React from 'react'
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SUPERADMIN_API_ENDPOINT } from '../../utils/constant';
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SUPERADMIN_API_ENDPOINT } from "../../utils/constant";
+import toast from "react-hot-toast";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      return toast.error("Please fill all fields");
+    }
+
     try {
-      await axios.post(`${SUPERADMIN_API_ENDPOINT}/login`, {
-        email,
-        password,
-      }, { withCredentials: true });
+      setLoading(true);
+
+      await axios.post(
+        `${SUPERADMIN_API_ENDPOINT}/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+
+      toast.success("Login successful ");
 
       navigate("/dashboard");
     } catch (err) {
-      alert("Login failed");
+      toast.error(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,12 +53,16 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="btn btn-primary w-100" onClick={handleLogin}>
-          Login
+        <button
+          className="btn btn-primary w-100"
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
       </div>
     </div>
   );
-}
+};
 
-export default Login
+export default Login;
