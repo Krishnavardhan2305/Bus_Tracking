@@ -9,6 +9,7 @@ import CreateCollege from "./pages/CreateCollege";
 import CreateAdmin from "./pages/CreateAdmin";
 import ViewColleges from "./pages/ViewColleges";
 import ViewAdmins from "./pages/ViewAdmins";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 const App = () => {
   return (

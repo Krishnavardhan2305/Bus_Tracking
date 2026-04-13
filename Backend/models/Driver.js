@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
 
 const driverSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
 
-  phone: String,
+  phone: {
+    type: String,
+    required: true,
+    unique: true, 
+  },
 
   password: {
     type: String,
