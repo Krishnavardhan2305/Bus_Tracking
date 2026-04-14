@@ -260,3 +260,13 @@ export const getAdminCollegeDetails = async (req, res) => {
   }
 };
 
+export const logoutAdmin = async (req, res) => {
+  try {
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("logoutAdmin error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
