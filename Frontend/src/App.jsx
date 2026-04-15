@@ -3,13 +3,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Toaster } from "react-hot-toast";
 
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import CreateCollege from "./pages/CreateCollege";
-import CreateAdmin from "./pages/CreateAdmin";
-import ViewColleges from "./pages/ViewColleges";
-import ViewAdmins from "./pages/ViewAdmins";
+import Login from "./pages/SuperAdmin/Login"
+import Dashboard from "./pages/SuperAdmin/Dashboard"
+import CreateCollege from "./pages/SuperAdmin/CreateCollege"
+import CreateAdmin from "./pages/SuperAdmin/CreateAdmin"
+import ViewColleges from "./pages/SuperAdmin/ViewColleges"
+import ViewAdmins from "./pages/SuperAdmin/ViewAdmins"
 import ProtectedRoute from "./Components/ProtectedRoute";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminLogin from "./pages/Admin/AdminLogin";
+import AddDriver from "./pages/Admin/AddDriver";
 
 const App = () => {
   return (
@@ -46,6 +49,9 @@ const App = () => {
           />
           <Route path="/colleges" element={<ViewColleges />} />
           <Route path="/viewadmins" element={<ViewAdmins />} />
+          <Route path="/adminlogin" element={<AdminLogin />} />
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/admin/add-driver" element={<AddDriver />} />
         </Routes>
       </BrowserRouter>
     </>

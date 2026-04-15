@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
-import { SUPERADMIN_API_ENDPOINT } from "../utils/constant";
+import { SUPERADMIN_API_ENDPOINT } from '../utils/constant';
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);

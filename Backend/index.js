@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import superadminRoutes from "./Routes/SuperAdminRoutes.js";
+import adminRoutes from "./Routes/AdminRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 );
 
 app.use("/api/v1/superadmin", superadminRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 
 const PORT = process.env.PORT || 5000;
