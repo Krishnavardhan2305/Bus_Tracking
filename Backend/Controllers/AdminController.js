@@ -260,6 +260,45 @@ export const getAdminCollegeDetails = async (req, res) => {
   }
 };
 
+export const addRoute = async (req, res) => {
+  try {
+    const { name, stops } = req.body;
+
+    if (!name || !stops || stops.length < 2) {
+      return res.status(400).json({
+        message: "Route name and at least 2 stops required",
+      });
+    }
+
+    const route = await Route.create({
+      name,
+      stops,
+      collegeId: req.user.collegeId,
+    });
+
+    res.status(201).json({
+      message: "Route created successfully",
+      route,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getRoutes = async (req, res) => {
+  try {
+    const routes = await Route.find({
+      collegeId: req.user.collegeId,
+    });
+
+    res.json({ routes });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const logoutAdmin = async (req, res) => {
   try {
     return res.status(200).cookie("token", "", { maxAge: 0 }).json({

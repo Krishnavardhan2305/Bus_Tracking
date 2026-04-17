@@ -26,6 +26,8 @@ router.get("/drivers", isAuthenticated, adminOnly, getAllDrivers);
 router.post("/bus", isAuthenticated, adminOnly, addBus);
 router.get("/buses", isAuthenticated, adminOnly, getAllBuses);
 
+router.post("/route", isAuthenticated, adminOnly, addRoute);
+router.get("/routes", isAuthenticated, adminOnly, getRoutes);
 router.put("/assign-driver", isAuthenticated, adminOnly, assignDriverToBus);
 
 router.get("/logout", isAuthenticated, adminOnly, logoutAdmin);

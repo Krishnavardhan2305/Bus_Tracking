@@ -32,7 +32,19 @@ const AdminNavbar = () => {
         >
           Add Driver
         </button>
+        <button
+          className="btn btn-warning me-2"
+          onClick={() => navigate("/admin/add-bus")}
+        >
+          Add Bus
+        </button>
 
+        <button
+          className="btn btn-info me-2"
+          onClick={() => navigate("/admin/add-route")}
+        >
+          Add Route
+        </button>
         <button className="btn btn-danger" onClick={handleLogout}>
           Logout
         </button>
