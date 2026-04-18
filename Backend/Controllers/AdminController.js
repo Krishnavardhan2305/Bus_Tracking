@@ -195,29 +195,44 @@ export const assignDriverToBus = async (req, res) => {
     const collegeId = req.user.collegeId;
 
     if (!busId || !driverId) {
-      return res.status(400).json({ message: "busId and driverId are required" });
+      return res.status(400).json({
+        message: "busId and driverId are required",
+      });
     }
 
     if (
       !mongoose.Types.ObjectId.isValid(busId) ||
       !mongoose.Types.ObjectId.isValid(driverId)
     ) {
-      return res.status(400).json({ message: "Invalid busId or driverId" });
+      return res.status(400).json({
+        message: "Invalid busId or driverId",
+      });
     }
 
     const bus = await Bus.findOne({ _id: busId, collegeId });
     if (!bus) {
-      return res.status(404).json({ message: "Bus not found in your college" });
+      return res.status(404).json({
+        message: "Bus not found in your college",
+      });
     }
 
     const driver = await Driver.findOne({ _id: driverId, collegeId });
     if (!driver) {
-      return res.status(404).json({ message: "Driver not found in your college" });
+      return res.status(404).json({
+        message: "Driver not found in your college",
+      });
     }
 
-    
     if (driver.busId && driver.busId.toString() !== busId) {
-      return res.status(400).json({ message: "Driver already assigned to another bus" });
+      return res.status(400).json({
+        message: "Driver already assigned to another bus",
+      });
+    }
+
+    if (bus.driverId && bus.driverId.toString() !== driverId) {
+      return res.status(400).json({
+        message: "Bus already has a driver assigned",
+      });
     }
 
     bus.driverId = driverId;
@@ -227,18 +242,14 @@ export const assignDriverToBus = async (req, res) => {
     await driver.save();
 
     return res.status(200).json({
-      message: "Driver assigned to bus successfully",
-      bus,
-      driver: {
-        _id: driver._id,
-        name: driver.name,
-        phone: driver.phone,
-        busId: driver.busId,
-      },
+      message: "Driver assigned successfully 🚍",
     });
+
   } catch (error) {
     console.error("assignDriverToBus error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
@@ -298,6 +309,7 @@ export const getRoutes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const logoutAdmin = async (req, res) => {
   try {

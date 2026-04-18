@@ -13,6 +13,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AddDriver from "./pages/Admin/AddDriver";
+import AssignBus from "./pages/Admin/AssignBus";
 
 const App = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/adminlogin" element={<AdminLogin />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/admin/add-driver" element={<AddDriver />} />
+          <Route path="/admin/assign-bus" element={<AssignBus />} />
         </Routes>
       </BrowserRouter>
     </>

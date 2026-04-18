@@ -54,7 +54,10 @@ const AdminDashboard = () => {
                   <td>{driver.busId?.busNumber || "Not Assigned"}</td>
 
                   <td>
-                    <button className="btn btn-sm btn-primary">
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => navigate(`/admin/assign-bus?driverId=${driver._id}`)}
+                    >
                       Assign Bus
                     </button>
                   </td>

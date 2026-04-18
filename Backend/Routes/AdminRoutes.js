@@ -9,6 +9,8 @@ import {
   assignDriverToBus,
   getAdminCollegeDetails,
   logoutAdmin,
+  addRoute,
+  getRoutes,
 } from "../Controllers/AdminController.js";
 
 import { isAuthenticated, adminOnly } from "../MiddleWare/IsAuthenticated.js";
@@ -29,7 +31,6 @@ router.get("/buses", isAuthenticated, adminOnly, getAllBuses);
 router.post("/route", isAuthenticated, adminOnly, addRoute);
 router.get("/routes", isAuthenticated, adminOnly, getRoutes);
 router.put("/assign-driver", isAuthenticated, adminOnly, assignDriverToBus);
-
 router.get("/logout", isAuthenticated, adminOnly, logoutAdmin);
 
 export default router;
