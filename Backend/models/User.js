@@ -1,12 +1,16 @@
-import mongoose from "mongoose";
-
 const userSchema = new mongoose.Schema({
   name: String,
 
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true, // important (drivers may not have email)
+  },
+
+  phone: {
+    type: String,
+    unique: true,
+    sparse: true, // admin may not have phone
   },
 
   password: {
@@ -16,8 +20,8 @@ const userSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["student", "admin", "superadmin"],
-    default: "student",
+    enum: ["student", "admin", "superadmin", "driver"],
+    required: true,
   },
 
   collegeId: {
@@ -31,5 +35,3 @@ const userSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
-
-export default mongoose.model("User", userSchema);

@@ -5,37 +5,34 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     let token;
 
-    //  1. Check if token exists in cookies
+    // 1. From cookies
     if (req.cookies?.token) {
       token = req.cookies.token;
     }
 
-    // 2. Else check if token is in Authorization header
+    // 2. From headers
     else if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    // 3. If no token found anywhere → reject
+    // 3. No token
     if (!token) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    //  4. Verify JWT
+    // 4. Verify
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    //  decoded = { userId, role }
-
-    //  5. Fetch user from DB using userId
+    // 5. Fetch user
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
-    //  6. Attach user to request
+    // 6. Attach
     req.user = user;
 
-    //  7. Continue to next middleware/controller
     next();
 
   } catch (error) {
@@ -44,10 +41,9 @@ export const isAuthenticated = async (req, res, next) => {
   }
 };
 
-export const superAdminOnly = (req, res, next) => 
-{
+export const superAdminOnly = (req, res, next) => {
   if (req.user.role !== "superadmin") {
-    return res.status(403).json({ message: "Access denied" });
+    return res.status(403).json({ message: "Superadmin only" });
   }
   next();
 };
@@ -55,6 +51,13 @@ export const superAdminOnly = (req, res, next) =>
 export const adminOnly = (req, res, next) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Admins only" });
+  }
+  next();
+};
+
+export const driverOnly = (req, res, next) => {
+  if (req.user.role !== "driver") {
+    return res.status(403).json({ message: "Drivers only" });
   }
   next();
 };

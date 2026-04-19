@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/User.js";
-import Driver from "../models/Driver.js";
 import Bus from "../models/Bus.js";
 import College from "../models/College.js";
 import Route from "../models/Route.js";
@@ -58,7 +57,7 @@ export const loginAdmin = async (req, res) => {
 
 export const getAdminMe = async (req, res) => {
   try {
-    const userId=req.user._id;
+    const userId = req.user._id;
     const admin = await User.findById(userId)
       .select("-password")
       .populate("collegeId", "name email code");
@@ -189,11 +188,13 @@ export const getAllBuses = async (req, res) => {
   }
 };
 
+
 export const assignDriverToBus = async (req, res) => {
   try {
     const { busId, driverId } = req.body;
     const collegeId = req.user.collegeId;
 
+    // ✅ Validate input
     if (!busId || !driverId) {
       return res.status(400).json({
         message: "busId and driverId are required",
@@ -209,6 +210,7 @@ export const assignDriverToBus = async (req, res) => {
       });
     }
 
+    // ✅ Get bus (same college)
     const bus = await Bus.findOne({ _id: busId, collegeId });
     if (!bus) {
       return res.status(404).json({
@@ -216,27 +218,41 @@ export const assignDriverToBus = async (req, res) => {
       });
     }
 
-    const driver = await Driver.findOne({ _id: driverId, collegeId });
+    const driver = await User.findOne({
+      _id: driverId,
+      role: "driver",
+      collegeId,
+    });
+
     if (!driver) {
       return res.status(404).json({
         message: "Driver not found in your college",
       });
     }
 
-    if (driver.busId && driver.busId.toString() !== busId) {
+    // ❗ Driver already assigned somewhere else
+    if (
+      driver.assignedBus &&
+      driver.assignedBus.toString() !== busId
+    ) {
       return res.status(400).json({
         message: "Driver already assigned to another bus",
       });
     }
 
-    if (bus.driverId && bus.driverId.toString() !== driverId) {
+    // ❗ Bus already has another driver
+    if (
+      bus.driverId &&
+      bus.driverId.toString() !== driverId
+    ) {
       return res.status(400).json({
         message: "Bus already has a driver assigned",
       });
     }
 
+    // ✅ Assign
     bus.driverId = driverId;
-    driver.busId = busId;
+    driver.assignedBus = busId;
 
     await bus.save();
     await driver.save();
@@ -252,7 +268,6 @@ export const assignDriverToBus = async (req, res) => {
     });
   }
 };
-
 export const getAdminCollegeDetails = async (req, res) => {
   try {
     const collegeId = req.user.collegeId;
