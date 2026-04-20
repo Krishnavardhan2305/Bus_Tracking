@@ -14,6 +14,10 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AddDriver from "./pages/Admin/AddDriver";
 import AssignBus from "./pages/Admin/AssignBus";
+import StudentLogin from "./pages/Student/StudentLogin";
+import SelectBus from "./pages/Student/SelectBus";
+import TrackBus from "./pages/TrackBus";
+import LiveMap from "./components/LiveMap";
 
 const App = () => {
   return (
@@ -54,6 +58,12 @@ const App = () => {
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/admin/add-driver" element={<AddDriver />} />
           <Route path="/admin/assign-bus" element={<AssignBus />} />
+          <Route path="/driver/login" element={<DriverLogin />} />
+          <Route path="/driver/dashboard" element={<DriverDashboard />} />      
+          <Route path="/track/:busId" element={<LiveMap />} />
+          <Route path="/student/login" element={<StudentLogin />} />
+          <Route path="/student/select-bus" element={<SelectBus />} />
+          <Route path="/track/:busId" element={<TrackBus />} />
         </Routes>
       </BrowserRouter>
     </>

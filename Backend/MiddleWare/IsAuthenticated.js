@@ -61,3 +61,10 @@ export const driverOnly = (req, res, next) => {
   }
   next();
 };
+
+export const StudentOnly = (req, res, next) => {
+  if (req.user.role !== "student") {
+    return res.status(403).json({ message: "Admins only" });
+  }
+  next();
+};

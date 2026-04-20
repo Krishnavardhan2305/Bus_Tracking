@@ -8,6 +8,7 @@ import adminRoutes from "./Routes/AdminRoutes.js";
 import { Server } from "socket.io";
 import { initSocket } from "./Socket.js"
 import driverRoutes from "./Routes/DriverRoutes.js";
+import studentRoutes from "./Routes/StudentRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(
 app.use("/api/v1/superadmin", superadminRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/driver", driverRoutes);
+app.use("/api/v1/student", studentRoutes);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
