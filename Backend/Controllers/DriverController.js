@@ -1,5 +1,6 @@
-import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import User from "../models/User.js";
+import Bus from "../models/Bus.js";
 import jwt from "jsonwebtoken";
 
 export const loginDriver = async (req, res) => {
@@ -64,18 +65,27 @@ export const loginDriver = async (req, res) => {
 
 export const getDriverDashboard = async (req, res) => {
   try {
+    console.log("Hey from backend");
+
     const user = req.user;
 
     if (user.role !== "driver") {
       return res.status(403).json({ message: "Access denied" });
     }
 
+    if (!user.assignedBus) {
+      return res.status(200).json({
+        bus: null,
+      });
+    }
+
     const bus = await Bus.findById(user.assignedBus)
       .populate("routeId");
 
-    res.json({ bus });
+    return res.status(200).json({ bus });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Driver dashboard error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };

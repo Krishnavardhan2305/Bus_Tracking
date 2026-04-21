@@ -22,6 +22,7 @@ const DriverDashboard = () => {
 
   const fetchDashboard = async () => {
     try {
+      console.log("Hi");
       const res = await axios.get(`${DRIVER_API_ENDPOINT}/dashboard`, {
         withCredentials: true,
       });

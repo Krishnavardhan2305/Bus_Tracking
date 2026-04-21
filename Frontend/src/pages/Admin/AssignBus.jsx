@@ -1,14 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminNavbar from "../../Components/AdminNavbar";
 import { ADMIN_API_ENDPOINT } from "../../utils/constant";
+import { useParams } from "react-router-dom";
 
 const AssignBus = () => {
-  const [searchParams] = useSearchParams();
-  const driverId = searchParams.get("driverId");
 
+   const { driverId } = useParams(); 
+
+  console.log(driverId);
   const [buses, setBuses] = useState([]);
 
   useEffect(() => {
@@ -30,24 +31,30 @@ const AssignBus = () => {
   };
 
   const handleAssign = async (busId) => {
-    try {
-      await axios.post(
-        `${ADMIN_API_ENDPOINT}/assign-driver`,
-        {
-          driverId,
-          busId,
-        },
-        { withCredentials: true }
-      );
+  if (!driverId) {
+    toast.error("Driver ID missing");
+    return;
+  }
 
-      toast.success("Assigned successfully 🚍");
+  try {
+    console.log("driverId:", driverId);
 
-      fetchBuses(); // refresh
+    await axios.put(
+      `${ADMIN_API_ENDPOINT}/assign-driver`,
+      {
+        driverId,
+        busId,
+      },
+      { withCredentials: true }
+    );
 
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Assignment failed");
-    }
-  };
+    toast.success("Assigned successfully 🚍");
+    fetchBuses();
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Assignment failed");
+  }
+};
 
   return (
     <>

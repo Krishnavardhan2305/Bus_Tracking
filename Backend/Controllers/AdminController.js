@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Bus from "../models/Bus.js";
 import College from "../models/College.js";
 import Route from "../models/Route.js";
+import Driver from "../models/Driver.js"
 
 export const loginAdmin = async (req, res) => {
   try {
@@ -77,37 +78,49 @@ export const addDriver = async (req, res) => {
     const collegeId = req.user.collegeId;
 
     if (!name || !phone || !password) {
-      return res.status(400).json({ message: "Please fill all fields" });
+      return res.status(400).json({
+        message: "Please fill all fields",
+      });
     }
 
-    const existingDriver = await Driver.findOne({
+    // ✅ Check existing driver in User collection
+    const existingDriver = await User.findOne({
       phone,
+      role: "driver",
       collegeId,
     });
 
     if (existingDriver) {
-      return res.status(400).json({ message: "Driver already exists" });
+      return res.status(400).json({
+        message: "Driver already exists",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const driver = await Driver.create({
+    // ✅ Create driver as User
+    const driver = await User.create({
       name,
       phone,
       password: hashedPassword,
+      role: "driver",
       collegeId,
     });
 
+    // remove password
     const driverData = driver.toObject();
     delete driverData.password;
 
     return res.status(201).json({
-      message: "Driver added successfully",
+      message: "Driver added successfully 🚍",
       driver: driverData,
     });
+
   } catch (error) {
     console.error("addDriver error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
@@ -115,20 +128,25 @@ export const getAllDrivers = async (req, res) => {
   try {
     const collegeId = req.user.collegeId;
 
-    const drivers = await Driver.find({ collegeId })
+    const drivers = await User.find({
+      role: "driver",
+      collegeId,
+    })
       .select("-password")
-      .populate("busId", "busNumber");
+      .populate("assignedBus", "busNumber");
 
     return res.status(200).json({
       count: drivers.length,
       drivers,
     });
+
   } catch (error) {
     console.error("getAllDrivers error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
-
 export const addBus = async (req, res) => {
   try {
     const { busNumber, routeId } = req.body;
@@ -191,9 +209,9 @@ export const getAllBuses = async (req, res) => {
 
 export const assignDriverToBus = async (req, res) => {
   try {
+    
     const { busId, driverId } = req.body;
     const collegeId = req.user.collegeId;
-
     // ✅ Validate input
     if (!busId || !driverId) {
       return res.status(400).json({
@@ -209,7 +227,7 @@ export const assignDriverToBus = async (req, res) => {
         message: "Invalid busId or driverId",
       });
     }
-
+    
     // ✅ Get bus (same college)
     const bus = await Bus.findOne({ _id: busId, collegeId });
     if (!bus) {
@@ -217,29 +235,30 @@ export const assignDriverToBus = async (req, res) => {
         message: "Bus not found in your college",
       });
     }
-
+    
     const driver = await User.findOne({
       _id: driverId,
       role: "driver",
       collegeId,
     });
-
     if (!driver) {
       return res.status(404).json({
         message: "Driver not found in your college",
       });
     }
+    console.log("assignedBus:", driver.assignedBus);
 
     // ❗ Driver already assigned somewhere else
-    if (
-      driver.assignedBus &&
-      driver.assignedBus.toString() !== busId
-    ) {
-      return res.status(400).json({
-        message: "Driver already assigned to another bus",
-      });
+      if (
+        driver.assignedBus &&
+        driver.assignedBus.toString() !== busId
+      ) {
+        return res.status(400).json({
+          message: "Driver already assigned to another bus",
+        });
     }
-
+    
+    console.log("step-3");
     // ❗ Bus already has another driver
     if (
       bus.driverId &&
@@ -256,7 +275,7 @@ export const assignDriverToBus = async (req, res) => {
 
     await bus.save();
     await driver.save();
-
+    
     return res.status(200).json({
       message: "Driver assigned successfully 🚍",
     });

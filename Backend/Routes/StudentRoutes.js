@@ -1,6 +1,6 @@
 import express from "express";
 
-import { isAuthenticated, adminOnly } from "../MiddleWare/IsAuthenticated.js";
+import { isAuthenticated, StudentOnly } from "../MiddleWare/IsAuthenticated.js";
 import { getBusesForStudent, loginStudent } from "../Controllers/StudentController.js";
 const router = express.Router();
 

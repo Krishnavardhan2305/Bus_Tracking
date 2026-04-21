@@ -1,16 +1,18 @@
+import mongoose from "mongoose";
+
 const userSchema = new mongoose.Schema({
   name: String,
 
   email: {
     type: String,
     unique: true,
-    sparse: true, // important (drivers may not have email)
+    sparse: true, 
   },
 
   phone: {
     type: String,
     unique: true,
-    sparse: true, // admin may not have phone
+    sparse: true, 
   },
 
   password: {
@@ -35,3 +37,5 @@ const userSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
+
+export default mongoose.model("User", userSchema);

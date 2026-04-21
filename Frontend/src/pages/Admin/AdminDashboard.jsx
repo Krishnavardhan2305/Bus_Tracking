@@ -1,13 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import {  useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminNavbar from "../../Components/AdminNavbar";
 import { ADMIN_API_ENDPOINT } from "../../utils/constant";
 
-
 const AdminDashboard = () => {
   const [drivers, setDrivers] = useState([]);
-
+  const navigate=useNavigate();
   useEffect(() => {
     fetchDrivers();
   }, []);
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
                   <td>
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => navigate(`/admin/assign-bus?driverId=${driver._id}`)}
+                      onClick={() => navigate(`/admin/assign-bus/${driver._id}`)}
                     >
                       Assign Bus
                     </button>
