@@ -22,6 +22,7 @@ import TrackBus from "./pages/TrackBus";
 import LiveMap from "./components/LiveMap";
 import DriverLogin from "./pages/Driver/DriverLogin";
 import DriverDashboard from "./pages/Driver/DriverDashboard";
+import ViewBuses from "./pages/Admin/ViewBuses";
 
 const App = () => {
   return (
@@ -63,7 +64,8 @@ const App = () => {
           <Route path="/admin/add-driver" element={<AddDriver />} />
           <Route path="/admin/add-bus" element={<AddBus/>}/>
           <Route path="/admin/add-route" element={<AddRoute/>}/>
-          <Route path="/admin/assign-bus/:driverId" element={<AssignBus />} />          
+          <Route path="/admin/assign-bus/:driverId" element={<AssignBus />} />
+          <Route path="/admin/buses" element={<ViewBuses />} />          
           <Route path="/driverlogin" element={<DriverLogin/>} />      
           <Route path="/driver/dashboard" element={<DriverDashboard />} />      
           <Route path="/track/:busId" element={<LiveMap />} />

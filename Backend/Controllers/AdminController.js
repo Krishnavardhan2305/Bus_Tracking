@@ -6,6 +6,7 @@ import Bus from "../models/Bus.js";
 import College from "../models/College.js";
 import Route from "../models/Route.js";
 import Driver from "../models/Driver.js"
+import XLSX from "xlsx";
 
 export const loginAdmin = async (req, res) => {
   try {
@@ -209,7 +210,7 @@ export const getAllBuses = async (req, res) => {
 
 export const assignDriverToBus = async (req, res) => {
   try {
-    
+
     const { busId, driverId } = req.body;
     const collegeId = req.user.collegeId;
     // ✅ Validate input
@@ -227,7 +228,7 @@ export const assignDriverToBus = async (req, res) => {
         message: "Invalid busId or driverId",
       });
     }
-    
+
     // ✅ Get bus (same college)
     const bus = await Bus.findOne({ _id: busId, collegeId });
     if (!bus) {
@@ -235,7 +236,7 @@ export const assignDriverToBus = async (req, res) => {
         message: "Bus not found in your college",
       });
     }
-    
+
     const driver = await User.findOne({
       _id: driverId,
       role: "driver",
@@ -249,15 +250,15 @@ export const assignDriverToBus = async (req, res) => {
     console.log("assignedBus:", driver.assignedBus);
 
     // ❗ Driver already assigned somewhere else
-      if (
-        driver.assignedBus &&
-        driver.assignedBus.toString() !== busId
-      ) {
-        return res.status(400).json({
-          message: "Driver already assigned to another bus",
-        });
+    if (
+      driver.assignedBus &&
+      driver.assignedBus.toString() !== busId
+    ) {
+      return res.status(400).json({
+        message: "Driver already assigned to another bus",
+      });
     }
-    
+
     console.log("step-3");
     // ❗ Bus already has another driver
     if (
@@ -275,7 +276,7 @@ export const assignDriverToBus = async (req, res) => {
 
     await bus.save();
     await driver.save();
-    
+
     return res.status(200).json({
       message: "Driver assigned successfully 🚍",
     });
@@ -331,6 +332,7 @@ export const addRoute = async (req, res) => {
   }
 };
 
+
 export const getRoutes = async (req, res) => {
   try {
     const routes = await Route.find({
@@ -344,6 +346,67 @@ export const getRoutes = async (req, res) => {
   }
 };
 
+
+
+export const uploadStudents = async (req, res) => {
+  try {
+    const file = req.file;
+    const collegeId = req.user.collegeId;
+
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // read excel
+    const workbook = XLSX.read(file.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    let created = 0;
+    let skipped = 0;
+
+    for (const row of data) {
+      const { rollNo, password } = row;
+
+      if (!rollNo || !password) {
+        skipped++;
+        continue;
+      }
+
+      // check duplicate
+      const exists = await User.findOne({ email: rollNo });
+
+      if (exists) {
+        skipped++;
+        continue;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await User.create({
+        name: rollNo,
+        email: rollNo, // using rollNo as email/login
+        password: hashedPassword,
+        role: "student",
+        collegeId,
+      });
+
+      created++;
+    }
+
+    return res.status(200).json({
+      message: "Upload complete",
+      created,
+      skipped,
+    });
+
+  } catch (error) {
+    console.error("uploadStudents error:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
 
 export const logoutAdmin = async (req, res) => {
   try {

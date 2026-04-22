@@ -11,7 +11,10 @@ import {
   logoutAdmin,
   addRoute,
   getRoutes,
+  uploadStudents,
 } from "../Controllers/AdminController.js";
+
+import { upload } from "../MiddleWare/upload.js";
 
 import { isAuthenticated, adminOnly } from "../MiddleWare/IsAuthenticated.js";
 
@@ -31,6 +34,7 @@ router.get("/buses", isAuthenticated, adminOnly, getAllBuses);
 router.post("/route", isAuthenticated, adminOnly, addRoute);
 router.get("/routes", isAuthenticated, adminOnly, getRoutes);
 router.put("/assign-driver", isAuthenticated, adminOnly, assignDriverToBus);
+router.post("/upload-students",isAuthenticated,adminOnly,upload.single("file"),uploadStudents);
 router.get("/logout", isAuthenticated, adminOnly, logoutAdmin);
 
 export default router;

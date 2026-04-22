@@ -45,6 +45,12 @@ const AdminNavbar = () => {
         >
           Add Route
         </button>
+        <button
+          className="btn btn-primary me-2"
+          onClick={() => navigate("/admin/buses")}
+        >
+          View Buses
+        </button>
         <button className="btn btn-danger" onClick={handleLogout}>
           Logout
         </button>
