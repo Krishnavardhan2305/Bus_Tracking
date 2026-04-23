@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { STUDENT_API_ENDPOINT } from "../../utils/constant";
 
+
 const StudentLogin = () => {
-  const [email, setEmail] = useState("");
+  const [rollNo, setRollNo] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -13,19 +14,18 @@ const StudentLogin = () => {
 
   const handleLogin = async () => {
     try {
-      if (!email || !password) {
-        return toast.error("Please fill all fields");
-      }
-
       setLoading(true);
 
       await axios.post(
         `${STUDENT_API_ENDPOINT}/login`,
-        { email, password },
+        {
+          email: rollNo, 
+          password,
+        },
         { withCredentials: true }
       );
 
-      toast.success("Login successful 🚍");
+      toast.success("Login successful 🎓");
 
       navigate("/student/select-bus");
 
@@ -42,18 +42,15 @@ const StudentLogin = () => {
         <h3 className="text-center mb-3">Student Login</h3>
 
         <input
-          type="email"
           className="form-control mb-2"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Roll Number"
+          onChange={(e) => setRollNo(e.target.value)}
         />
 
         <input
           type="password"
           className="form-control mb-3"
           placeholder="Password"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
