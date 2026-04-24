@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { STUDENT_API_ENDPOINT } from "../../utils/constant";
+
 
 const SelectBus = () => {
   const [buses, setBuses] = useState([]);
@@ -11,26 +14,36 @@ const SelectBus = () => {
   }, []);
 
   const fetchBuses = async () => {
-    const res = await axios.get("", {
-      withCredentials: true,
-    });
+    try {
+      const res = await axios.get(`${STUDENT_API_ENDPOINT}/buses`, {
+        withCredentials: true,
+      });
 
-    setBuses(res.data.buses);
+      setBuses(res.data.buses || []);
+    } catch (err) {
+      toast.error("Failed to load buses");
+    }
   };
 
   return (
     <div className="container mt-5">
-      <h3>Select Bus</h3>
+      <h3>Select Your Bus</h3>
 
-      {buses.map((bus) => (
-        <button
-          key={bus._id}
-          className="btn btn-primary m-2"
-          onClick={() => navigate(`/track/${bus._id}`)}
-        >
-          {bus.busNumber}
-        </button>
-      ))}
+      <div className="mt-3">
+        {buses.length > 0 ? (
+          buses.map((bus) => (
+            <button
+              key={bus._id}
+              className="btn btn-success m-2"
+              onClick={() => navigate(`/track/${bus._id}`)}
+            >
+              {bus.busNumber}
+            </button>
+          ))
+        ) : (
+          <p>No buses available</p>
+        )}
+      </div>
     </div>
   );
 };

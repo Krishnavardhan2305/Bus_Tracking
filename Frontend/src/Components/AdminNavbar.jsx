@@ -51,6 +51,12 @@ const AdminNavbar = () => {
         >
           View Buses
         </button>
+        <button
+          className="btn btn-warning me-2"
+          onClick={() => navigate("/admin/upload-students")}
+        >
+          Upload Students
+        </button>
         <button className="btn btn-danger" onClick={handleLogout}>
           Logout
         </button>

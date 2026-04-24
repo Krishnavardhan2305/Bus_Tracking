@@ -23,6 +23,7 @@ import LiveMap from "./components/LiveMap";
 import DriverLogin from "./pages/Driver/DriverLogin";
 import DriverDashboard from "./pages/Driver/DriverDashboard";
 import ViewBuses from "./pages/Admin/ViewBuses";
+import UploadStudents from "./pages/Admin/UploadStudents";
 
 const App = () => {
   return (
@@ -72,6 +73,7 @@ const App = () => {
           <Route path="/student/login" element={<StudentLogin />} />
           <Route path="/student/select-bus" element={<SelectBus />} />
           <Route path="/track/:busId" element={<TrackBus />} />
+          <Route path="/admin/upload-students" element={<UploadStudents />} />
         </Routes>
       </BrowserRouter>
     </>
