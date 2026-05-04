@@ -51,7 +51,7 @@ const AdminDashboard = () => {
                   <td>{index + 1}</td>
                   <td>{driver.name}</td>
                   <td>{driver.phone}</td>
-                  <td>{driver.busId?.busNumber || "Not Assigned"}</td>
+                 <td>{driver.assignedBus?.busNumber || "Not Assigned"}</td>
 
                   <td>
                     <button

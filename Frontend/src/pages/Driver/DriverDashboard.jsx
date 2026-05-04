@@ -3,46 +3,40 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { DRIVER_API_ENDPOINT } from "../../utils/constant";
-
-
-// 🔌 socket connection
-const socket = io("http://localhost:8080");
+import { socket } from "../../socket";
 
 const DriverDashboard = () => {
   const [bus, setBus] = useState(null);
   const [tracking, setTracking] = useState(false);
+  const [watchId, setWatchId] = useState(null);
 
   useEffect(() => {
     fetchDashboard();
 
     return () => {
-      socket.disconnect();
+      // cleanup GPS + socket listeners
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      socket.off();
     };
   }, []);
 
   const fetchDashboard = async () => {
     try {
-      console.log("Hi");
       const res = await axios.get(`${DRIVER_API_ENDPOINT}/dashboard`, {
         withCredentials: true,
       });
-
       setBus(res.data.bus);
-
     } catch (err) {
       toast.error("Failed to load dashboard");
     }
   };
 
-  // 🚀 Start sending location
   const startTracking = () => {
-    if (!bus) {
-      return toast.error("No bus assigned");
-    }
+    if (!bus) return toast.error("No bus assigned");
 
     setTracking(true);
 
-    navigator.geolocation.watchPosition(
+    const id = navigator.geolocation.watchPosition(
       (pos) => {
         const data = {
           busId: bus._id,
@@ -50,18 +44,24 @@ const DriverDashboard = () => {
           lng: pos.coords.longitude,
         };
 
+        console.log("Sending:", data);
         socket.emit("send-location", data);
       },
       (err) => {
-        toast.error("Location error");
+        console.log("GPS ERROR:", err);
+
+        if (err.code === 1) toast.error("Permission denied");
+        else if (err.code === 2) toast.error("Location unavailable");
+        else if (err.code === 3) toast.error("Timeout");
       },
       {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000,
+        enableHighAccuracy: false,
+        maximumAge: 10000,
+        timeout: 20000,
       }
     );
 
+    setWatchId(id);
     toast.success("Tracking started 📍");
   };
 

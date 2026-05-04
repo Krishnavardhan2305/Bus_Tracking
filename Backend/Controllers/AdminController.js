@@ -346,8 +346,6 @@ export const getRoutes = async (req, res) => {
   }
 };
 
-
-
 export const uploadStudents = async (req, res) => {
   try {
     const file = req.file;
@@ -357,7 +355,7 @@ export const uploadStudents = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // read excel
+    // 📄 Read Excel
     const workbook = XLSX.read(file.buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -366,17 +364,39 @@ export const uploadStudents = async (req, res) => {
     let skipped = 0;
 
     for (const row of data) {
-      const { rollNo, password } = row;
+      // console.log("RAW ROW:", row);
+
+      const normalizedRow = Object.fromEntries(
+        Object.entries(row).map(([key, value]) => [
+          key.trim().toLowerCase(),
+          value,
+        ])
+      );
+
+      // console.log("NORMALIZED:", normalizedRow);
+
+      let rollNo =
+        normalizedRow["rollno"] ||
+        normalizedRow["roll no"] ||
+        normalizedRow["roll_number"];
+
+      let password = normalizedRow["password"];
+
+      rollNo = rollNo ? String(rollNo).trim() : null;
+      password = password ? String(password).trim() : null;
+
+      console.log("Parsed:", { rollNo, password });
 
       if (!rollNo || !password) {
+        console.log(" Missing values → skipped");
         skipped++;
         continue;
       }
 
-      // check duplicate
       const exists = await User.findOne({ email: rollNo });
 
       if (exists) {
+        console.log("Duplicate → skipped:", rollNo);
         skipped++;
         continue;
       }
@@ -385,12 +405,13 @@ export const uploadStudents = async (req, res) => {
 
       await User.create({
         name: rollNo,
-        email: rollNo, // using rollNo as email/login
+        email: rollNo, 
         password: hashedPassword,
         role: "student",
         collegeId,
       });
 
+      console.log(" Created:", rollNo);
       created++;
     }
 
