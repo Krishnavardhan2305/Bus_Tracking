@@ -70,7 +70,7 @@ const App = () => {
           <Route path="/driverlogin" element={<DriverLogin/>} />      
           <Route path="/driver/dashboard" element={<DriverDashboard />} />      
           <Route path="/track/:busId" element={<LiveMap />} />
-          <Route path="/student/login" element={<StudentLogin />} />
+          <Route path="/studentlogin" element={<StudentLogin />} />
           <Route path="/student/select-bus" element={<SelectBus />} />
           <Route path="/track/:busId" element={<TrackBus />} />
           <Route path="/admin/upload-students" element={<UploadStudents />} />
