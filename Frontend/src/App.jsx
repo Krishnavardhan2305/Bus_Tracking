@@ -69,7 +69,6 @@ const App = () => {
           <Route path="/admin/buses" element={<ViewBuses />} />          
           <Route path="/driverlogin" element={<DriverLogin/>} />      
           <Route path="/driver/dashboard" element={<DriverDashboard />} />      
-          <Route path="/track/:busId" element={<LiveMap />} />
           <Route path="/studentlogin" element={<StudentLogin />} />
           <Route path="/student/select-bus" element={<SelectBus />} />
           <Route path="/track/:busId" element={<TrackBus />} />

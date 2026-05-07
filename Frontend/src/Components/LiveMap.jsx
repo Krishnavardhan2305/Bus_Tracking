@@ -35,15 +35,14 @@ const RecenterMap = ({ position }) => {
   return null;
 };
 
-const LiveMap = () => {
-  const { busId } = useParams(); // ✅ get from URL
+const   LiveMap = () => {
+  const { busId } = useParams(); 
   const [position, setPosition] = useState(null);
 
   useEffect(() => {
     const handler = (data) => {
       console.log("Received:", data, "URL bus:", busId);
 
-      // ✅ match IDs correctly
       if (String(data.busId) === String(busId)) {
         setPosition([data.lat, data.lng]);
       }

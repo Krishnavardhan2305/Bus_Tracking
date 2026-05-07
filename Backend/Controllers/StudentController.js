@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Bus from "../models/Bus.js";
 
 export const loginStudent = async (req, res) => {
   try {
@@ -47,14 +48,14 @@ export const loginStudent = async (req, res) => {
     }
 
     const token = jwt.sign(
-  {
-    userId: student._id,
-    role: student.role,
-    collegeId: student.collegeId, 
-  },
-  process.env.JWT_SECRET_KEY,
-  { expiresIn: "1d" }
-);
+      {
+        userId: student._id,
+        role: student.role,
+        collegeId: student.collegeId,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1d" }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -81,13 +82,35 @@ export const loginStudent = async (req, res) => {
 
 export const getBusesForStudent = async (req, res) => {
   try {
+
+    console.log("REQ USER:", req.user);
+
+    if (!req.user?.collegeId) {
+      return res.status(400).json({
+        message: "College ID missing",
+      });
+    }
+
     const buses = await Bus.find({
       collegeId: req.user.collegeId,
+    })
+      .populate({
+        path: "driverId",
+        select: "name",
+      })
+      .populate({
+        path: "routeId",
+      });
+
+    return res.status(200).json({
+      buses,
     });
 
-    res.json({ buses });
-
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log("GET BUSES ERROR:", err);
+
+    return res.status(500).json({
+      message: err.message,
+    });
   }
 };
