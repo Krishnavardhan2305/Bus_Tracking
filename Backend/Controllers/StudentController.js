@@ -114,3 +114,26 @@ export const getBusesForStudent = async (req, res) => {
     });
   }
 };
+
+export const logoutStudent = async (req, res) => {
+  try {
+
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return res.status(200).json({
+      message: "Student logged out successfully",
+    });
+
+  } catch (error) {
+    console.error("Student logout error:", error);
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

@@ -1,7 +1,8 @@
 import express from "express";
 import {
   loginDriver,
-  getDriverDashboard
+  getDriverDashboard,
+  logoutDriver
 } from "../Controllers/DriverController.js";
 
 import {
@@ -19,5 +20,6 @@ router.get(
   driverOnly,
   getDriverDashboard
 );
+router.get("/logout", logoutDriver);
 
 export default router;

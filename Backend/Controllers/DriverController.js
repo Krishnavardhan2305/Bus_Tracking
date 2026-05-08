@@ -89,3 +89,25 @@ export const getDriverDashboard = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const logoutDriver = async (req, res) => {
+  try {
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return res.status(200).json({
+      message: "Driver logged out successfully",
+    });
+
+  } catch (error) {
+    console.error("Driver logout error:", error);
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
